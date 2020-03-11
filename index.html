@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>React-demo</title>
+	<style>
+		#app {
+			margin: 50px auto;
+			width: 600px;
+		}
+
+		fieldset {
+			border: 1px solid purple;
+			margin-bottom: 20px;
+			padding: 10px;
+		}
+
+		fieldset input {
+			width: 200px;
+			height: 30px;
+			margin: 10px 0;
+		}
+
+		table {
+			width: 600px;
+			border: 2px solid purple;
+			text-align: center;
+		}
+
+		thead {
+			background-color: purple;
+			color: #fff;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="app"></div>
+	<script src="./js/react.development.js"></script>
+	<script src="./js/react-dom.development.js"></script>
+	<script src="./js/prop-types.js"></script>
+	<script src="./js/babel.min.js"></script>
+	<script type="text/babel">
+		//父组件app
+        class App extends React.Component{
+            constructor(props){
+                super(props)
+                this.state = {
+									tableData : [
+										{name: '周杰伦', age: 30, gender: '男', phone: '18899989839'},
+                    {name: '谢霆锋', age: 40, gender: '男', phone: '18299839890'},
+                    {name: '刘德华', age: 50, gender: '男', phone: '18998938783'}
+									]
+								}
+								this.delRowData = this.delRowData.bind(this)
+								this.submitNewInfo = this.submitNewInfo.bind(this)
+						}
+						delRowData(index){
+							const {tableData} = this.state;
+							tableData.splice(index,1) 
+							this.setState({
+								tableData
+							})
+						}
+						submitNewInfo(studentInfo){
+							const {tableData} =  this.state;
+							tableData.unshift(studentInfo)
+							this.setState({
+								tableData
+							})
+						}
+            render(){
+                return (
+                    <div>
+												<Form addToArr={this.submitNewInfo} />
+                        <Table tableArr={this.state.tableData} delRow={this.delRowData} />
+                    </div>
+								)
+						}
+						
+				}
+				
+			//子组件1（表单添加）
+			class Form extends React.Component {
+				constructor(props){
+					super(props);
+					this.state = {
+						name: "",
+						gender:'男',
+						age: "",
+						phone: ""
+					}
+				}
+				static propTypes = {
+					addToArr: PropTypes.func.isRequired
+				}
+				nameChange(e) {
+					this.setState({
+						name: e.target.value
+					})
+				}
+				ageChange(e) {
+					this.setState({
+						age: e.target.value
+					})
+				}
+				genderChange(e) {
+					this.setState({
+						gender: e.target.value
+					})
+				}
+				phoneChange(e) {
+					this.setState({
+						phone: e.target.value
+					})
+				}
+				submitInfo(){
+					const {name,age,gender,phone} = this.state
+					if(!name || !age || !gender || !phone){
+						alert('输入的数据不能为空！');
+						return;
+				}
+				//添加数据
+				this.props.addToArr({name,age,gender,phone})
+				this.setState({
+					name: "",
+					gender:'男',
+					age: "",
+					phone: ""
+				})
+				}
+				render(){
+					return (
+						<fieldset>
+							<legend>撩课信息录入系统(React版)</legend>
+							<div>
+									<span>姓名: </span>
+									<input type="text" 
+									onChange={(e)=> this.nameChange(e)}
+									value={this.state.name} placeholder="请输入姓名"/>
+							</div>
+							<div>
+									<span>年龄: </span>
+									<input type="text" 
+									onChange={(e)=> this.ageChange(e)}
+									value={this.state.age} placeholder="请输入年龄"/>
+							</div>
+							<div>
+									<span>性别: </span>
+									<select 
+									onChange={(e)=> this.genderChange(e)}
+									value={this.state.gender}>
+											<option value="男">男</option>
+											<option value="女">女</option>
+									</select>
+							</div>
+							<div>
+									<span>手机: </span>
+									<input type="text"
+									onChange={(e)=> this.phoneChange(e)} 
+									value={this.state.phone} placeholder="请输入手机号码"/>
+							</div>
+							<button onClick={()=> this.submitInfo()}>创建新用户</button>
+						</fieldset>
+					)
+				}
+			}
+
+				//子组件2（表格数据展示）
+        class Table extends React.Component {
+						constructor(props){
+							super(props)
+							this.state = {
+							
+							}
+						}
+            static propTypes = {
+								tableArr: PropTypes.array.isRequired,
+								delRow: 	PropTypes.func.isRequired
+						}
+            render() {
+							const {tableArr, delRow}  =  this.props;
+                return (
+                    <div>
+											<table>
+                        <thead>
+													<tr>
+															<td>姓名</td>
+															<td>性别</td>
+															<td>年龄</td>
+															<td>手机</td>
+															<td>删除</td>
+													</tr>
+                        </thead>
+                        <tbody>
+                          {
+															tableArr.map((item,index)=> (
+																<tr key={index}>
+																	<td>{item.name}</td>
+																	<td>{item.gender}</td>
+																	<td>{item.age}</td>
+																	<td>{item.phone}</td>
+																	<td>
+																			<button onClick={()=>delRow(index)}>删除</button>
+																	</td>
+															</tr>
+															)
+														)
+                          }
+                        </tbody>
+                    </table> 
+									</div>
+                )
+            }
+        }
+        
+        ReactDOM.render(<App/>, document.getElementById('app'))
+    </script>
+</body>
+
+</html>
